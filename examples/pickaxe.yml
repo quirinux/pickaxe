@@ -1,0 +1,5 @@
+---
+time_out: 120
+duration: 30
+concurrency: 1000
+url: http://localhost:4000/api/ping
