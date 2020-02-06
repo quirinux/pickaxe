@@ -42,9 +42,17 @@ struct Opt {
 }
 
 fn print_table(result: &pickaxe::result::Result) {
-  let width = 30;
-  let left = width / 2;
-  let right = width / 2;
+  let half_row_lenght = 15;
+  let left = half_row_lenght;
+  let right = match &result.url {
+    Some(url) => {
+      if half_row_lenght < url.path().len() {
+        url.path().len()
+      } else { half_row_lenght}
+    },
+    _ => half_row_lenght,
+  };
+  let width = left + right;
 
   if let Some(url) = &result.url {
     println!("{:^width$}", "Benchmarking", width = width);
@@ -78,7 +86,9 @@ fn print_table(result: &pickaxe::result::Result) {
   println!("{:^width$}", "Response time summary", width = width);
   println!("{:=<width$}", "=", width = width);
   for (k, v) in result.duration_summary.iter() {
-    println!("{:<left$}{:>right$}", format!("{:?}", k), v, left = left, right = right);
+    let perc = ((*v as f32 / result.total() as f32) * 100f32) as usize;
+    print!("{:<left$}{:>right$}", format!("{:?}", k), v, left = left, right = right);
+    println!(" {:+<width$}", "", width = perc );
   }
 }
 
